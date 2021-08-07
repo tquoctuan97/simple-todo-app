@@ -1,4 +1,36 @@
+function templateItem(item) {
+    return `
+    <li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
+      <span class="item-text">${item.text}</span>
+      <div>
+      <button data-id="${item._id}" class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
+      <button data-id="${item._id}" class="delete-me btn btn-danger btn-sm">Delete</button>
+      </div>
+    </li>
+    `
+}
+
+
+document.getElementById("formTodo").addEventListener("submit", function(e) {
+    e.preventDefault()
+    let inputTodo = document.getElementById("inputTodo")
+    if(inputTodo.value) {
+        axios.post('/create-item', {text: inputTodo.value})
+        .then(res => {
+            console.log(res.data)
+            document.getElementById("listTodo").insertAdjacentHTML('beforeend', templateItem(res.data))
+            inputTodo.value = ""
+            inputTodo.focus()
+        })
+        .catch(err => {
+            console.log(err)
+        })
+        
+    }
+})
+
 document.addEventListener('click', function(e) {
+    // Edit Feature
     if(e.target.classList.contains("edit-me")) {
         let value = prompt("Edit Item", e.target.parentElement.parentElement.querySelector('.item-text').innerHTML)
         if(value) {
@@ -13,9 +45,8 @@ document.addEventListener('click', function(e) {
             })
         }
     }
-})
-
-document.addEventListener('click', function(e) {
+    
+    //Delete Feature
     if(e.target.classList.contains("delete-me")) {
         let answer = confirm("Do you really want to delete this item permanently?")
         if(answer) {
@@ -27,31 +58,5 @@ document.addEventListener('click', function(e) {
                 console.log("Error")
             })
         }
-    }
-})
-
-document.getElementById("formTodo").addEventListener("submit", function(e) {
-    e.preventDefault()
-    let inputTodo = document.getElementById("inputTodo")
-    let listTodo = document.getElementById("listTodo")
-    if(inputTodo.value) {
-        axios.post('/create-item', {text: inputTodo.value})
-        .then(res => {
-            console.log(res.data)
-            let HTML = `<li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
-            <span class="item-text">${inputTodo.value}</span>
-            <div>
-            <button data-id="${res.data.insertedId}" class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
-            <button data-id="${res.data.insertedId}" class="delete-me btn btn-danger btn-sm">Delete</button>
-            </div>
-          </li>`
-            listTodo.insertAdjacentHTML('beforeend', HTML)
-            inputTodo.value = ""
-            inputTodo.focus()
-        })
-        .catch(err => {
-            console.log(err)
-        })
-        
     }
 })

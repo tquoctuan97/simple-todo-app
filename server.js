@@ -76,7 +76,15 @@ app.get('/', function(req, res) {
 // })
 app.post('/create-item', function(req, res) {
   db.collection('items').insertOne({text: req.body.text}, function(err, response) {
-    res.json(response)
+    if(err) {
+      res.json('Error occurred while inserting')
+    } else {
+      let data = {
+        "_id":  response.insertedId,
+        "text": req.body.text
+      }
+      res.json(data)
+    }
   })
 })
 
