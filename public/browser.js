@@ -9,8 +9,13 @@ function templateItem(item) {
     </li>
     `
 }
+// Client-side Render
+let ourHTML = items.map(function(item) {
+    return templateItem(item)
+}).join('')
+document.getElementById('listTodo').insertAdjacentHTML('beforeend', ourHTML)
 
-
+// Create Feature
 document.getElementById("formTodo").addEventListener("submit", function(e) {
     e.preventDefault()
     let inputTodo = document.getElementById("inputTodo")
