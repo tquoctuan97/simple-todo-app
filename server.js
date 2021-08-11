@@ -1,5 +1,6 @@
 let express = require('express')
 let mongodb = require('mongodb')
+let sanitizeHTML = require('sanitize-html')
 
 let app = express()
 let db
@@ -16,6 +17,18 @@ app.use(express.static('public'))
 app.use(express.json())
 
 app.use(express.urlencoded({extended: false}))
+
+app.use(passwordProtection);
+
+function passwordProtection(req, res, next) {
+  res.set('WWW-Authenticate','Basic real="Simple Todo App"')
+  console.log(req.headers.authorization)
+  if(req.headers.authorization == "Basic bGVhcm46anM=") {
+    next()
+  } else {
+    res.status(401).send('Error Auhentication')
+  }
+}
 
 app.get('/', function(req, res) {
   db.collection('items').find().toArray(function(err, items) {
