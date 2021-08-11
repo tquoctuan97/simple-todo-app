@@ -1,7 +1,7 @@
 function templateItem(item) {
     return `
     <li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
-      <span class="item-text">${item.text}</span>
+      <span class="item-text">${sanitizeHTML(item.text)}</span>
       <div>
       <button data-id="${item._id}" class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
       <button data-id="${item._id}" class="delete-me btn btn-danger btn-sm">Delete</button>
@@ -9,6 +9,13 @@ function templateItem(item) {
     </li>
     `
 }
+
+function sanitizeHTML(text) {
+    let element = document.createElement('div');
+    element.innerText = text;
+    return element.innerHTML;
+}
+  
 // Client-side Render
 let ourHTML = items.map(function(item) {
     return templateItem(item)
@@ -42,7 +49,7 @@ document.addEventListener('click', function(e) {
             axios.post('/edit-item', {text: value, id: e.target.getAttribute("data-id")})
             .then(res => {
                 console.log(res.data);
-                e.target.parentElement.parentElement.querySelector('.item-text').innerHTML = value
+                e.target.parentElement.parentElement.querySelector('.item-text').innerHTML = sanitizeHTML(value)
             }
             )
             .catch(err => {

@@ -2,6 +2,7 @@ let express = require('express')
 let mongodb = require('mongodb')
 let sanitizeHTML = require('sanitize-html')
 
+
 let app = express()
 let db
 
@@ -22,7 +23,6 @@ app.use(passwordProtection);
 
 function passwordProtection(req, res, next) {
   res.set('WWW-Authenticate','Basic real="Simple Todo App"')
-  console.log(req.headers.authorization)
   if(req.headers.authorization == "Basic bGVhcm46anM=") {
     next()
   } else {
@@ -78,7 +78,8 @@ app.get('/', function(req, res) {
 //   })
 // })
 app.post('/create-item', function(req, res) {
-  db.collection('items').insertOne({text: req.body.text}, function(err, response) {
+  let safeText = sanitizeHTML(req.body.text, { allowedTags: [], allowedAttributes: {} } )
+  db.collection('items').insertOne({text: safeText}, function(err, response) {
     if(err) {
       res.json('Error occurred while inserting')
     } else {
@@ -93,7 +94,8 @@ app.post('/create-item', function(req, res) {
 
 
 app.post('/edit-item', function(req, res) {
-  db.collection('items').findOneAndUpdate({_id: new mongodb.ObjectId(req.body.id) }, {$set: {text: req.body.text}}, function(){
+  let safeText = sanitizeHTML(req.body.text, { allowedTags: [], allowedAttributes: {} } )
+  db.collection('items').findOneAndUpdate({_id: new mongodb.ObjectId(req.body.id) }, {$set: {text: safeText}}, function(){
     res.json("Edit Success")
   })
 })
